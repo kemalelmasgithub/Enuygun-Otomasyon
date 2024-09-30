@@ -5,13 +5,14 @@ import org.apache.logging.log4j.Logger;
 import com.thoughtworks.gauge.Step;
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -24,16 +25,41 @@ public class StepImplementation extends BaseTest {
         new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_WAIT_TIME))
                 .until(ExpectedConditions.elementToBeClickable(by));
     }
+    public void scrollToElement(By by) {
+        WebElement element = driver.findElement(by);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(element).perform();
+    }
+
 
     // Dinamik bekleme - Elementin görünür olmasını bekler
     public void waitForElementToBeVisible(By by) {
         new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_WAIT_TIME))
                 .until(ExpectedConditions.visibilityOfElementLocated(by));
     }
+    @Step("<xpath> Ödeme sayfasında gerekli alanlar doldurulmadığında hata kodu al")
+    public void verifyElementPresencePassTest(String xpath) {
+        try {
+            // Elementin sayfada görünür olup olmadığını kontrol ediyoruz
+            WebElement element = new WebDriverWait(driver, Duration.ofSeconds(10))
+                    .until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+
+            if (element.isDisplayed()) {
+                logger.info("Element bulundu, test başarıyla geçti.");
+            } else {
+                logger.error("Element bulundu ancak görünür değil.");
+                Assert.fail("Element bulundu ancak görünür değil.");
+            }
+        } catch (Exception e) {
+            logger.error("Element bulunamadı: " + xpath);
+            Assert.fail("Test başarısız oldu, element bulunamadı: " + xpath);
+        }
+    }
 
     @Step("<second> saniye bekle")
     public void waitForsecond(int second) throws InterruptedException {
         Thread.sleep(1000 * second);
+        logger.info(second + "kadar statik bekleme");
     }
 
     @Step("<Key> İd'li elemente tıkla")
@@ -83,7 +109,7 @@ public class StepImplementation extends BaseTest {
         return driver.findElements(by);
     }
 
-    @Step("Rastgele ürün seç <xpath> ifadesine göre ve <wait> saniye bekle")
+    @Step("Rastgele uçuş seç <xpath> ifadesine göre ve <wait> saniye bekle")
     public void randomClick(String xpath, int wait) throws InterruptedException {
         List<WebElement> elements = listElements(xpath);
         if (!elements.isEmpty()) {
@@ -94,6 +120,7 @@ public class StepImplementation extends BaseTest {
         }
         waitForsecond(wait);
     }
+
     @Step("<Key> xpath'li elemente kalkış bilgisi icin <keywordc> değerini yaz")
     public void FirstFlight(String Key, String keywordc) {
         By by = By.xpath(Key);
@@ -101,6 +128,7 @@ public class StepImplementation extends BaseTest {
         driver.findElement(by).sendKeys(keywordc);
         logger.info("Elemente değer yazıldı: " + keywordc + " - Element Xpath: " + Key);
     }
+
     @Step("<Key> xpath'li elemente inis bilgisi icin <keywordc> değerini yaz")
     public void SecondFlight(String Key, String keywordc) {
         By by = By.xpath(Key);
@@ -109,6 +137,103 @@ public class StepImplementation extends BaseTest {
         logger.info("Elemente değer yazıldı: " + keywordc + " - Element Xpath: " + Key);
     }
 
+    // Slider'ı belirlenen aralıkta ayarlamak için bir metot
+    @Step("Sol Slider'ı ayarla ve başlangıç <startValue> ve bitiş <endValue> olarak")
+    // Slider'ı hareket ettirme
+    public void moveSliderLeft(int startValue, int endValue) {
+        WebElement sliderLeft = driver.findElement(By.xpath("//div[@data-testid='departureDepartureTimeSlider']//div[@class='rc-slider-handle rc-slider-handle-1']"));
+        Actions move = new Actions(driver);
 
+        int currentAriaValue = Integer.parseInt(sliderLeft.getAttribute("aria-valuenow"));
+        logger.info(currentAriaValue);
+
+            move.clickAndHold(sliderLeft).moveByOffset(endValue, 0).release().perform();
+            logger.info("çalışıyor mu");
+
+
+        try {
+            Thread.sleep(2000); // 2 saniye bekleme
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    @Step("Sağ Slider'ı ayarla ve başlangıç <startValue> ve bitiş <endValue> olarak")
+    // Slider'ı hareket ettirme
+    public void moveSliderRight(int startValue, int endValue) {
+        WebElement sliderRight = driver.findElement(By.xpath("//div[@data-testid='departureDepartureTimeSlider']//div[@class='rc-slider-handle rc-slider-handle-2']"));
+        Actions move = new Actions(driver);
+
+        int currentAriaValue = Integer.parseInt(sliderRight.getAttribute("aria-valuenow"));
+        logger.info(currentAriaValue);
+
+        move.clickAndHold(sliderRight).moveByOffset(endValue, 0).release().perform();
+        logger.info("çalışıyor mu");
+
+
+        try {
+            Thread.sleep(2000); // 2 saniye bekleme
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Step("Listelenen uçuşlarda AnadoluJet uçuşlarının fiyatlarının artan şekilde sıralandığını kontrol et")
+    public void verifyAnadoluJetFlightsPriceOrder() {
+        // AnadoluJet uçuşlarını temsil eden elementlerin XPath'ini belirleyin
+        String anadoluJetFlightXpath = "//div[@data-testid='flightInfoPrice']";
+
+        // Fiyat attribute'u
+        String priceAttribute = "data-price";
+
+        // AnadoluJet uçuşlarını bul
+        List<WebElement> anadoluJetFlights = driver.findElements(By.xpath(anadoluJetFlightXpath));
+
+        // Uçuşları bir ArrayList'e ekleyin
+        ArrayList<WebElement> anadoluJetFlightList = new ArrayList<>(anadoluJetFlights);
+
+        if (anadoluJetFlightList.isEmpty()) {
+            logger.info("Hic AnadoluJet ucusu bulunamadi.");
+            return; // Eğer AnadoluJet uçuşu yoksa kontrol burada biter.
+        }
+
+        // Fiyatları bir ArrayList'e ekle
+        ArrayList<Double> anadoluJetFlightPrices = new ArrayList<>();
+
+        for (WebElement anadoluJetFlight : anadoluJetFlightList) {
+            // Fiyat attribute'undan değeri al
+            String priceText = anadoluJetFlight.getAttribute(priceAttribute);
+
+            if (priceText == null) {
+                logger.warn("Fiyat bilgisi bulunamadi, ucuş elementini atla: " + anadoluJetFlight.toString());
+                continue; // Eğer fiyat bilgisi yoksa, bu uçuşu atla
+            }
+
+            // Fiyatların double a cevrilmesi
+            try {
+                double price = Double.parseDouble(priceText);
+                anadoluJetFlightPrices.add(price);
+            } catch (NumberFormatException e) {
+                logger.error("Fiyat değeri hatalı: " + priceText, e);
+            }
+        }
+
+        // Fiyatların sıralanması
+        ArrayList<Double> sortedPrices = new ArrayList<>(anadoluJetFlightPrices);
+        Collections.sort(sortedPrices);
+
+        // Orijinal fiyatların sıralı olup olmadığınının kontrolu
+        if (anadoluJetFlightPrices.equals(sortedPrices)) {
+            logger.info("AnadoluJet uçuşlarının fiyatları artan şekilde sıralı.");
+        } else {
+            logger.error("AnadoluJet uçuşlarının fiyatları artan şekilde sıralı değil!");
+            Assert.fail("AnadoluJet uçuşlarının fiyatları artan şekilde sıralı değil!");
+        }
+    }
 }
+
+
+
+
+
 

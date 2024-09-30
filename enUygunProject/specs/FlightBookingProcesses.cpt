@@ -1,0 +1,45 @@
+
+ # Gidiş Dönüş Butonuna Tıklama
+   * "//div[@data-testid='search-round-trip-text']" xpath'li elemente tıkla
+
+ # Kalkış Bilgisi Girişi
+    *"//div[@data-testid='flight-origin-label']" xpath'li elemente tıkla
+    *"//input[@data-testid='endesign-flight-origin-autosuggestion-input']" xpath'li elemente kalkış bilgisi icin "İstanbul" değerini yaz
+    *"//div[@data-testid='autosuggestion-custom-item-istanbul-sabiha-gokcen-havalimani']" xpath'li elemente tıkla
+
+ # Varış Bilgisi Girişi
+ *"//input[@data-testid='endesign-flight-destination-autosuggestion-input']" xpath'li elemente inis bilgisi icin "Ankara" değerini yaz
+ *"//div[@data-testid='autosuggestion-custom-item-ankara-esenboga-havalimani']" xpath'li elemente tıkla
+ *"//label[@data-testid='enuygun-homepage-flight-departureDate-input-comp']" xpath'li elemente tıkla
+
+ # Tarih Seçimi
+ *"//button[@title='2024-10-14']" xpath'li elemente tıkla
+ *"//label[@data-testid='enuygun-homepage-flight-returnDate-input-comp']" xpath'li elemente tıkla
+ *"//button[@title='2024-10-21']" xpath'li elemente tıkla
+ *"//button[@data-testid='enuygun-homepage-flight-submitButton']" xpath'li elemente tıkla
+
+ # Saat Aralığına Göre Filtreleme
+ *"//i[@class='ctx-filter-departure-return-time ei-expand-more ']" xpath'li elemente tıkla
+ *Sol Slider'ı ayarla ve başlangıç "0" ve bitiş "100" olarak
+ *Sağ Slider'ı ayarla ve başlangıç "0" ve bitiş "-60" olarak
+
+ # Saat Aralığına Göre Filtremeye Ait Kontrol
+ *Listelenen uçuşlarda AnadoluJet uçuşlarının fiyatlarının artan şekilde sıralandığını kontrol et
+
+ # AJET Uçuşlarının Artan Fiyat Sıralamasında Geldiğinin Kontrolü
+ *"//i[@class='ctx-filter-airline ei-expand-more ']" xpath'li elemente tıkla
+ *"//span[@class='checkbox  search__filter_airlines-VF --span-1']" xpath'li elemente tıkla
+ *Listelenen uçuşlarda AnadoluJet uçuşlarının fiyatlarının artan şekilde sıralandığını kontrol et
+
+ # Rastgele Gidiş Uçuşu Seçme
+ *Rastgele uçuş seç "//button[@class='action-select-btn tr btn btn-success btn-sm']" ifadesine göre ve "3" saniye bekle
+ *"//div[@class=' provider-package__item selected']" xpath'li elemente tıkla
+ *"//span[text()='Seç ve İlerle']" xpath'li elemente tıkla
+
+ # Rastgele Dönüş Uçuşu Seçme
+ *Rastgele uçuş seç "//div[@class='flight-list flight-list-return    domesticList']//button[@class='action-select-btn tr btn btn-success btn-sm']" ifadesine göre ve "3" saniye bekle
+ *"//div[@class='provider-package']/div[1]//i[@class='ei-search_header_arrow_right']" xpath'li elemente tıkla
+
+ # Kullanıcı Bilgilerini Girmeden Ödeme Sayfasını Geçmeye Çalışmak
+ *"//button[@id='continue-button']" xpath'li elemente tıkla
+ *"//span[contains(.,'Lütfen geçerli bir e-posta adresi girin')]" Ödeme sayfasında gerekli alanlar doldurulmadığında hata kodu al
